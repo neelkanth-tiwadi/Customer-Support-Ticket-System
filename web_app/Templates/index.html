@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Support System</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.container {
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    width: 500px;
+    color: white;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    
+    text-align: left;   /* 🔥 CHANGE THIS */
+}
+
+h1 {
+    margin-bottom: 20px;
+    text-align: center;   /* 👈 move centering here */
+}
+
+
+textarea {
+    width: 100%;
+    height: 110px;
+    border-radius: 10px;
+    border: none;
+    padding: 12px;
+    font-size: 14px;
+    outline: none;
+    resize: none;
+}
+
+textarea:focus {
+    box-shadow: 0 0 10px #00c6ff;
+}
+
+
+button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+
+.spinner {
+    display: none;
+    margin-top: 15px;
+}
+
+.loader {
+    border: 4px solid rgba(255,255,255,0.2);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+
+
+.result {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.15);
+    text-align: left;
+}
+
+
+.response {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Customer Support System</h1>
+
+    <form id="form" method="POST">
+
+    <div class="input-container">
+<form method="POST">
+        <input style="width: 500px; margin-bottom: 20px; border-radius: 10px; border: none; padding: 12px; font-size: 14px;"
+            type="email" 
+            name="email" 
+            placeholder="Enter your email" 
+            required
+        />
+
+        <textarea 
+            name="ticket" 
+            placeholder="Describe your issue..." 
+            required
+        ></textarea>
+
+    </div>
+
+    <button type="submit">Submit Issue</button>
+
+</form>
+
+    
+    <div class="spinner" id="spinner">
+        <div class="loader"></div>
+        <p>Analyzing...</p>
+    </div>
+
+    {% if result %}
+    <div class="result">
+
+        <p><b>Category:</b> {{ result.category }}</p>
+
+        
+        <p>
+            <b>Priority:</b> 
+            <span style="color: {{'red' if result.priority == 'High' else 'lightgreen'}};">
+                {{ result.priority }}
+            </span>
+        </p>
+
+        
+        {% if result.confidence is not none %}
+            {% set conf_color = 'lightgreen' if result.confidence >= 0.7 else 'red' %}
+            <p>
+                <b>Confidence:</b> 
+                <span style="color: {{ conf_color }};">
+                    {{ "%.2f"|format(result.confidence) }}
+                </span>
+            </p>
+        {% else %}
+            <p><b>Confidence:</b> Not available</p>
+        {% endif %}
+
+        <p><b>Action:</b> {{ result.action }}</p>
+
+        
+        <div class="response">
+            {{ result.response }}
+        </div>
+
+    </div>
+    {% endif %}
+</div>
+
+<script>
+
+document.querySelector("textarea").addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById("form").submit();
+    }
+});
+
+
+document.getElementById("form").addEventListener("submit", function() {
+    document.getElementById("spinner").style.display = "block";
+});
+</script>
+
+</body>
+</html>
